@@ -1,0 +1,62 @@
+# Maritime-STPCN Configuration
+
+experiment_name: "maritime_stpcn_full"
+output_dir: "results"
+
+model:
+  embedding_dim: 64
+  contrastive_dim: 32       # d/2
+  max_propagation_depth: 4  # L_max
+  num_stp_patterns: 2       # dual graph (geo + beh)
+  num_layers: 3
+  dropout: 0.1
+
+data:
+  num_vessels: 200
+  num_zones: 100
+  behaviors:
+    - transit
+    - loitering
+    - gear_deployment
+    - rendezvous
+    - at_sea_transshipment
+    - illegal_fishing
+  target_behavior: illegal_fishing
+  relation_order:
+    - transit
+    - loitering
+    - gear_deployment
+    - rendezvous
+    - at_sea_transshipment
+    - illegal_fishing
+  behavior_layers: [2, 2, 2, 1, 1, 1]
+  split_type: temporal
+  train_ratio: 0.75
+  val_ratio: 0.125
+  test_ratio: 0.125
+  geo_threshold_km: 50
+  beh_similarity_threshold: 0.7
+
+train:
+  batch_size: 128
+  learning_rate: 5.0e-3
+  weight_decay: 1.0e-4
+  max_epochs: 200
+  warmup_epochs: 5
+  warmup_start_lr: 1.0e-4
+  min_lr: 1.0e-5
+  early_stopping_patience: 20
+  grad_clip_norm: 1.0
+  lambda_rcl: 3.0
+  lambda_chain: 0.5
+  lambda_entropy: 0.01
+  lambda_l2: 1.0e-4
+  seed: 123
+  negative_sample_range_km: 200
+  gumbel_tau_init: 5.0
+  gumbel_tau_final: 0.1
+
+eval:
+  k_values: [5, 10, 20, 40]
+  bootstrap_samples: 100
+  confidence_level: 0.95
